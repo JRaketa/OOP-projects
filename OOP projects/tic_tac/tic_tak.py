@@ -4,6 +4,10 @@ import time
 class Player:
     """Class that represents a player of the game.
 
+    The player can be a human or the computer. The human player is a real player
+    that is supposed to make move by typing it in the terminal. The computer
+    player makes random move.
+
     Attributes:
         is_human (bool): the type of player. Player can be either human or
             computer. The True value is associated with human player. The False
@@ -14,14 +18,13 @@ class Player:
             board as the player move. By default it is 'X'.
 
     Methods:
-        get_player_move(board): runs get_human_move() function if is_human is
-            True. Otherwise, runs get_computer_move() method.
-            Args:
-                board (Board): an instance of a class Board.
+        get_player_move(): requires from a player to make a move.
         get_computer_move(board): returns a random move for the computer player.
             Args:
-                board (Board): an instance of a class Board.
-        get_human_move(): requires to type the move as input.
+                board (Board): an instance of a class Board. The board is matrix
+                    with 3*3 dimension that contains move's information of every
+                    player.
+        get_human_move(): requires to type the move as input from human player.
     """
 
     def __init__(self, is_human=True, marker='X'):
@@ -50,7 +53,7 @@ class Player:
         """Type of the player."""
         return self._is_human
 
-    def get_player_move(self, board):
+    def get_player_move(self):
         if self._is_human:
             return self.get_human_move()
         else:
@@ -59,12 +62,11 @@ class Player:
     def get_human_move(self):
         """Requires to type the move as input from human player.
 
-        The input is row and column coordinate of the board. The input structure
-        is [number][capital_letter]. [number] is a value from the list of
-        [1, 2, 3]. [capital_letter] is a value from the list of ["A", "B", "C"].
+        The input is row and column coordinates of the board. The input
+        format is [number][capital_letter]. [number] is a value from the list:
+        [1, 2, 3]. [capital_letter] is a value from the list: [A, B, C].
         Examples of the input:
             1A, 2B, 3C.
-        Correctness of the input value is checked in board.
         """
         move = input("Make move!: ")
         return move
@@ -72,10 +74,12 @@ class Player:
     def get_computer_move(self, board):
         """Generator of the computer move.
 
-        The generator choses randomly one move from the board instance.
+        The generator choses randomly an available move from the game board.
 
         Args:
-            board: An instance of a class Board.
+            board: an instance of a class Board. The board is matrix
+                with 3*3 dimension that contains move's information of every
+                player.
 
         Returns:
             A random value with format: [number][capital_letter]. [number] is from the list [1, 2, 3].
@@ -90,6 +94,13 @@ class Player:
 
 class Board:
     """Class that represents the board of the game.
+
+    The class represents the game board. The game board is a zero matrix with
+    3*3 dimension. The matrix contains information about moves of every player.
+    Every player's move is converted to the matrix coordinates. The element with
+    that coordinates is replaced to the player's marker. The game board is
+    printed after every player's move.
+
 
     Attributes:
         game_board (list):
@@ -143,7 +154,7 @@ class Board:
         Examples of the coordinates: "1B", "2B", "3C".
 
         Returns:
-            A list of with all coordinates of the board.
+            A list of with all available moves of the board.
         """
         generated_moves = []
         for col in range(len(Board.COLUMNS)):
@@ -222,7 +233,9 @@ class Board:
         Returns:
             True if the input is valid. False if the input in invalid.
         """
-        if len(str(move)) == 2 and int(move[0]) - 1 in Board.ROWS and move[1] in Board.COLUMNS:
+        len_move = len(str(move))
+        row_coor = int(move[0]) - 1
+        if len_move == 2 and row_coor in Board.ROWS and move[1] in Board.COLUMNS:
             return True
 
 
@@ -242,16 +255,11 @@ class Board:
             or "C".
             player (Player): a player that made the move.
         """
-        if self.check_row(row, player) == True:
-            return True
-        elif self.check_column(column, player) == True:
-            return True
-        elif self.check_diagonal(player) == True:
-            return True
-        elif self.check_intidiagonal(player) == True:
-            return True
-        else:
-            return False
+        check_row = self.check_row(row, player)
+        check_column = self.check_column(column, player)
+        check_diagonal = self.check_diagonal(player)
+        check_intidiagonal = self.check_intidiagonal(player)
+        return check_row or check_column or check_diagonal or check_intidiagonal
 
 
     def check_row(self, row, player):
@@ -366,38 +374,38 @@ class Board:
 
 
 
-#print("**************")
-#print(" Tic-Tac-Toe!")
-#print("**************")
+print("**************")
+print(" Tic-Tac-Toe!")
+print("**************")
 
-#board = Board()
-#human = Player()
-#computer = Player(False, 'O')
+board = Board()
+human = Player()
+computer = Player(False, 'O')
 
-#board.print_board()
+board.print_board()
 
 
 
-#while True:
-#    move = human.get_player_move(board)
-#    board.submit_move(move, human)
-#    board.print_board()
+while True:
+    move = human.get_player_move()
+    board.submit_move(move, human)
+    board.print_board()
 
-#    if board.is_winner(move[0], move[1], human) and board.is_move_valid(move):
-#        print("You win!")
-#        break
-#    if board.check_tie():
-#        print("It is a tie! Game is over!")
-#        break
-#    else:
-#        time.sleep(1)
-#        computer_move = computer.get_computer_move(board)
-#        board.submit_move(computer_move, computer)
-#        time.sleep(1)
-#        board.print_board()
-#        if board.is_winner(computer_move[0], computer_move[1], computer) and board.is_move_valid(move):
-#            print("Computer won!")
-#            break
-#        if board.check_tie():
-#            print("It is a tie! Game is over!")
-#            break
+    if board.is_winner(move[0], move[1], human) and board.is_move_valid(move):
+        print("You win!")
+        break
+    if board.check_tie():
+        print("It is a tie! Game is over!")
+        break
+    else:
+        time.sleep(1)
+        computer_move = computer.get_player_move()
+        board.submit_move(computer_move, computer)
+        time.sleep(1)
+        board.print_board()
+        if board.is_winner(computer_move[0], computer_move[1], computer) and board.is_move_valid(move):
+            print("Computer won!")
+            break
+        if board.check_tie():
+            print("It is a tie! Game is over!")
+            break
