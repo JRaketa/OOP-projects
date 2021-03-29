@@ -95,12 +95,11 @@ class Player:
 class Board:
     """Class that represents the board of the game.
 
-    The class represents the game board. The game board is a zero matrix with
-    3*3 dimension. The matrix contains information about moves of every player.
-    Every player's move is converted to the matrix coordinates. The element with
-    that coordinates is replaced to the player's marker. The game board is
-    printed after every player's move.
-
+    The game board is a matrix with zeros with 3*3 dimension. The matrix
+    contains information about moves of every player. Every player's move is
+    converted to the matrix coordinates. The element with that coordinates is
+    replaced to the player's marker. The game board is printed after every
+    player's move.
 
     Attributes:
         game_board (list):
